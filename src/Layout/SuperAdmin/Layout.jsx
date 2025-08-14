@@ -1,7 +1,9 @@
 // src/Layout/SuperAdmin/Layout.js
-import { useEffect, useState } from 'react';
-import Sidebar from '../../Component/SuperAdmin/Sidebar';
-import Topbar from '../../Component/SuperAdmin/Topbar';
+import { useEffect, useState } from "react";
+import Sidebar from "../../Component/SuperAdmin/Sidebar";
+import Topbar from "../../Component/SuperAdmin/Topbar";
+import Breadcrumb from "../../Component/SuperAdmin/Breadcrumb";
+
 function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isLargeScreen, setIsLargeScreen] = useState(false);
@@ -11,22 +13,18 @@ function Layout() {
     const checkScreenSize = () => {
       const isLarge = window.innerWidth >= 1024;
       setIsLargeScreen(isLarge);
-      // On large screens, sidebar should be open by default
-      // On small screens, sidebar should be closed by default
-      if (isLarge && !sidebarOpen) {
-        setSidebarOpen(true);
-      }
     };
 
     checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
-    return () => window.removeEventListener('resize', checkScreenSize);
-  }, [sidebarOpen]);
+    window.addEventListener("resize", checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
 
-  // Initialize sidebar state based on screen size
+  // Initialize sidebar state based on screen size only once
   useEffect(() => {
     const isLarge = window.innerWidth >= 1024;
     setSidebarOpen(isLarge);
+    setIsLargeScreen(isLarge);
   }, []);
 
   const handleMenuClick = () => {
@@ -39,16 +37,16 @@ function Layout() {
       setSidebarOpen(false);
     }
   };
-
+  const breadcrumbItems = [
+    { text: "Devices", link: "/devices" },
+    { text: "Device Details" },
+  ];
   return (
     <div className="flex h-screen bg-gray-50">
-      <Sidebar 
-        isOpen={sidebarOpen} 
-        onClose={closeSidebar}
-      />
+      <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
       <div className="flex-1 flex flex-col min-w-0">
         <Topbar onMenuClick={handleMenuClick} />
-        
+        <Breadcrumb items={breadcrumbItems} />
       </div>
     </div>
   );
