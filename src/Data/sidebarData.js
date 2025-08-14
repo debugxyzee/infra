@@ -14,6 +14,8 @@ export const navItems = [
     id: "dashboard",
     label: "Dashboard",
     icon: MdDashboard,
+    isActive: true,
+    hasDropdown: false,
   },
   {
     id: "site-admin",
