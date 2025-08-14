@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import Sidebar from '../../Component/SuperAdmin/Sidebar';
-import Topbar from '../../Component/SuperAdmin/Topbar';
-function Layout() {
+import Topbar from '../../Component/SuperAdmin/TopBar';
+
+function Layout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isLargeScreen, setIsLargeScreen] = useState(false);
 
@@ -10,8 +11,6 @@ function Layout() {
     const checkScreenSize = () => {
       const isLarge = window.innerWidth >= 1024; // lg breakpoint
       setIsLargeScreen(isLarge);
-      // On large screens, sidebar should be open by default
-      // On small screens, sidebar should be closed by default
       if (isLarge && !sidebarOpen) {
         setSidebarOpen(true);
       }
@@ -22,7 +21,7 @@ function Layout() {
     return () => window.removeEventListener('resize', checkScreenSize);
   }, [sidebarOpen]);
 
-  // Initialize sidebar state based on screen size
+  // Initialize sidebar state
   useEffect(() => {
     const isLarge = window.innerWidth >= 1024;
     setSidebarOpen(isLarge);
@@ -33,7 +32,6 @@ function Layout() {
   };
 
   const closeSidebar = () => {
-    // Only auto-close on mobile/tablet screens
     if (!isLargeScreen) {
       setSidebarOpen(false);
     }
@@ -41,14 +39,10 @@ function Layout() {
 
   return (
     <div className="flex h-screen bg-gray-50">
-      <Sidebar 
-        isOpen={sidebarOpen} 
-        onClose={closeSidebar}
-      />
-      
+      <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
       <div className="flex-1 flex flex-col min-w-0">
         <Topbar onMenuClick={handleMenuClick} />
-        
+        <main className="flex-1 overflow-auto p-4">{children}</main>
       </div>
     </div>
   );
