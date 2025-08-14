@@ -10,7 +10,7 @@ import Main from './Pages/Main';
 
 // *** CONFIGURATION ***
 const MAINTENANCE_MODE_ENABLED = false;
-const ENFORCE_ROUTE_PROTECTION = true;
+const ENFORCE_ROUTE_PROTECTION = false;
 const allowedRoles = ["user", "admin", "superadmin"];
 
 // *** UTILITY FUNCTIONS ***
