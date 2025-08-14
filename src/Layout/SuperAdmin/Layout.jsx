@@ -1,3 +1,4 @@
+// src/Layout/SuperAdmin/Layout.js
 import { useEffect, useState } from 'react';
 import Sidebar from '../../Component/SuperAdmin/Sidebar';
 import Topbar from '../../Component/SuperAdmin/TopBar';
@@ -9,7 +10,7 @@ function Layout({ children }) {
   // Handle screen size changes
   useEffect(() => {
     const checkScreenSize = () => {
-      const isLarge = window.innerWidth >= 1024; // lg breakpoint
+      const isLarge = window.innerWidth >= 1024;
       setIsLargeScreen(isLarge);
       if (isLarge && !sidebarOpen) {
         setSidebarOpen(true);
