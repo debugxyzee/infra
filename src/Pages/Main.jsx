@@ -4,7 +4,8 @@ import Layout from '../Layout/SuperAdmin/Layout'
 function Main() {
   return (
     <div>
-      <Layout/>
+      {/* <Layout/> */}
+      <div>hello</div>
     </div>
   )
 }

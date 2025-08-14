@@ -7,12 +7,15 @@ import {
   Navigate,
 } from "react-router-dom";
 import Main from './Pages/Main';
-import Layout from './Layout/SuperAdmin/Layout'; 
+
+// Import SuperAdmin layout only
+import SuperAdminLayout from './Layout/SuperAdmin/Layout';
 
 // *** CONFIGURATION ***
 const MAINTENANCE_MODE_ENABLED = false;
 const ENFORCE_ROUTE_PROTECTION = false;
-const allowedRoles = ["user", "admin", "superadmin"];
+const AUTO_REDIRECT_TO_DASHBOARD = true; // Set to false to stay on landing page
+const allowedRoles = ["superadmin"]; // Only superadmin for now
 
 // *** UTILITY FUNCTIONS ***
 const isTokenValid = () => {
@@ -140,21 +143,17 @@ const MaintenancePage = () => (
 );
 
 const LandingPage = () => {
-  if (isTokenValid()) {
-    const role = sessionStorage.getItem("role");
-    switch (role) {
-      case "user":
-        return <Navigate to="/user/dashboard" replace />;
-      case "admin":
-        return <Navigate to="/admin/dashboard" replace />;
-      case "superadmin":
-        return <Navigate to="/superadmin/dashboard" replace />;
-      default:
-        clearSessionData();
-        break;
+    // Check if auto-redirect is enabled and user has valid token
+    if (AUTO_REDIRECT_TO_DASHBOARD && isTokenValid()) {
+        const role = sessionStorage.getItem("role");
+        if (role === "superadmin") {
+            return <Navigate to="/superadmin/dashboard" replace />;
+        } else {
+            // Clear invalid role data
+            clearSessionData();
+        }
     }
-  }
-  return <EmptyComponent pageName="Landing Page" />;
+    return <EmptyComponent pageName="Landing Page" />;
 };
 
 // *** PROTECTION COMPONENTS ***
@@ -198,25 +197,25 @@ const ProtectedRouteWrapper = ({ allowedRoles, children }) => {
 };
 
 const RedirectDashboard = () => {
-  if (!ENFORCE_ROUTE_PROTECTION) {
-    return <Navigate to="/user/dashboard" replace />;
-  }
-  if (!isTokenValid()) {
-    clearSessionData();
-    return <Navigate to="/" replace />;
-  }
-  const role = sessionStorage.getItem("role");
-  switch (role) {
-    case "user":
-      return <Navigate to="/user/dashboard" replace />;
-    case "admin":
-      return <Navigate to="/admin/dashboard" replace />;
-    case "superadmin":
-      return <Navigate to="/superadmin/dashboard" replace />;
-    default:
-      clearSessionData();
-      return <Navigate to="/" replace />;
-  }
+    if (!ENFORCE_ROUTE_PROTECTION) {
+        // Respect the auto-redirect setting
+        if (AUTO_REDIRECT_TO_DASHBOARD) {
+            return <Navigate to="/superadmin/dashboard" replace />;
+        } else {
+            return <Navigate to="/" replace />;
+        }
+    }
+    if (!isTokenValid()) {
+        clearSessionData();
+        return <Navigate to="/" replace />;
+    }
+    const role = sessionStorage.getItem("role");
+    if (role === "superadmin") {
+        return <Navigate to="/superadmin/dashboard" replace />;
+    } else {
+        clearSessionData();
+        return <Navigate to="/" replace />;
+    }
 };
 
 const MaintenanceWrapper = ({ children }) => {
@@ -251,79 +250,42 @@ const AppRouter = () => {
               }
             />
 
-            {/* User Routes */}
-            <Route path="/user/login" element={<EmptyComponent pageName="User Login" />} />
-            <Route
-              path="/user/*"
-              element={
-                <TokenWrapper>
-                  <ProtectedRouteWrapper allowedRoles={["user"]}>
-                    <Layout>
-                      <Routes>
-                        <Route path="dashboard" element={<EmptyComponent pageName="User Dashboard" />} />
-                        <Route path="profile" element={<EmptyComponent pageName="User Profile" />} />
-                        <Route path="settings" element={<EmptyComponent pageName="User Settings" />} />
-                        <Route path="reports" element={<EmptyComponent pageName="User Reports" />} />
-                        <Route path="forms" element={<EmptyComponent pageName="User Forms" />} />
-                        <Route path="notifications" element={<EmptyComponent pageName="User Notifications" />} />
-                        <Route path="*" element={<NotFound />} />
-                        <Route index element={<Navigate to="dashboard" replace />} />
-                      </Routes>
-                    </Layout>
-                  </ProtectedRouteWrapper>
-                </TokenWrapper>
-              }
-            />
+                        {/* Login Routes */}
+                        <Route path="/login" element={<EmptyComponent pageName="Login Page" />} />
+                        <Route path="/superadmin/login" element={<EmptyComponent pageName="Superadmin Login" />} />
 
-            {/* Admin Routes */}
-            <Route path="/admin/login" element={<EmptyComponent pageName="Admin Login" />} />
-            <Route
-              path="/admin/*"
-              element={
-                <TokenWrapper>
-                  <ProtectedRouteWrapper allowedRoles={["admin"]}>
-                    <Layout>
-                      <Routes>
-                        <Route path="dashboard" element={<EmptyComponent pageName="Admin Dashboard" />} />
-                        <Route path="users" element={<EmptyComponent pageName="Admin Users" />} />
-                        <Route path="reports" element={<EmptyComponent pageName="Admin Reports" />} />
-                        <Route path="settings" element={<EmptyComponent pageName="Admin Settings" />} />
-                        <Route path="analytics" element={<EmptyComponent pageName="Admin Analytics" />} />
-                        <Route path="permissions" element={<EmptyComponent pageName="Admin Permissions" />} />
-                        <Route path="*" element={<NotFound />} />
-                        <Route index element={<Navigate to="dashboard" replace />} />
-                      </Routes>
-                    </Layout>
-                  </ProtectedRouteWrapper>
-                </TokenWrapper>
-              }
-            />
+                        {/* Superadmin Routes Only */}
+                        <Route
+                            path="/superadmin/*"
+                            element={
+                                <TokenWrapper>
+                                    <ProtectedRouteWrapper allowedRoles={["superadmin"]}>
+                                        <SuperAdminLayout>
+                                            <Routes>
+                                                <Route path="dashboard" element={<EmptyComponent pageName="Superadmin Dashboard" />} />
+                                                <Route path="users" element={<EmptyComponent pageName="Superadmin Users" />} />
+                                                <Route path="admins" element={<EmptyComponent pageName="Superadmin Admins" />} />
+                                                <Route path="reports" element={<EmptyComponent pageName="Superadmin Reports" />} />
+                                                <Route path="settings" element={<EmptyComponent pageName="Superadmin Settings" />} />
+                                                <Route path="logs" element={<EmptyComponent pageName="Superadmin Logs" />} />
+                                                <Route path="system" element={<EmptyComponent pageName="Superadmin System" />} />
+                                                <Route path="backup" element={<EmptyComponent pageName="Superadmin Backup" />} />
+                                                <Route path="analytics" element={<EmptyComponent pageName="Superadmin Analytics" />} />
+                                                <Route path="permissions" element={<EmptyComponent pageName="Superadmin Permissions" />} />
+                                                <Route path="audit" element={<EmptyComponent pageName="Superadmin Audit" />} />
+                                                <Route path="maintenance" element={<EmptyComponent pageName="Superadmin Maintenance" />} />
+                                                <Route path="*" element={<NotFound />} />
+                                                <Route index element={<Navigate to="dashboard" replace />} />
+                                            </Routes>
+                                        </SuperAdminLayout>
+                                    </ProtectedRouteWrapper>
+                                </TokenWrapper>
+                            }
+                        />
 
-            {/* Superadmin Routes */}
-            <Route path="/superadmin/login" element={<EmptyComponent pageName="Superadmin Login" />} />
-            <Route
-              path="/superadmin/*"
-              element={
-                <TokenWrapper>
-                  <ProtectedRouteWrapper allowedRoles={["superadmin"]}>
-                    <Layout>
-                      <Routes>
-                        <Route path="dashboard" element={<EmptyComponent pageName="Superadmin Dashboard" />} />
-                        <Route path="users" element={<EmptyComponent pageName="Superadmin Users" />} />
-                        <Route path="admins" element={<EmptyComponent pageName="Superadmin Admins" />} />
-                        <Route path="reports" element={<EmptyComponent pageName="Superadmin Reports" />} />
-                        <Route path="settings" element={<EmptyComponent pageName="Superadmin Settings" />} />
-                        <Route path="logs" element={<EmptyComponent pageName="Superadmin Logs" />} />
-                        <Route path="system" element={<EmptyComponent pageName="Superadmin System" />} />
-                        <Route path="backup" element={<EmptyComponent pageName="Superadmin Backup" />} />
-                        <Route path="*" element={<NotFound />} />
-                        <Route index element={<Navigate to="dashboard" replace />} />
-                      </Routes>
-                    </Layout>
-                  </ProtectedRouteWrapper>
-                </TokenWrapper>
-              }
-            />
+                        {/* Redirect any other role-based routes to unauthorized */}
+                        <Route path="/user/*" element={<Navigate to="/unauthorized" replace />} />
+                        <Route path="/admin/*" element={<Navigate to="/unauthorized" replace />} />
 
             {/* Catch-all route */}
             <Route path="*" element={<Navigate to="/" replace />} />
