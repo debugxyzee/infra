@@ -1,8 +1,13 @@
-import React from 'react'
+import Sidebar from '../../Component/SuperAdmin/Sidebar'
+import TopBar from '../../Component/SuperAdmin/TopBar'
+
 
 function Layout() {
   return (
-    <div>Layout</div>
+    <div>
+      <Sidebar/>
+      <TopBar />
+    </div>
   )
 }
 
