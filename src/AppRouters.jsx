@@ -6,6 +6,7 @@ import {
   Navigate,
   useParams,
 } from "react-router-dom";
+import Main from './Pages/Main';
 
 // *** CONFIGURATION ***
 const MAINTENANCE_MODE_ENABLED = false;
@@ -265,7 +266,7 @@ const AppRouter = () => {
             <Route path="/404" element={<NotFound />} />
 
             {/* Main Landing Page */}
-            <Route path="/" element={<LandingPage />} />
+            <Route path="/" element={<Main />} />
 
             {/* Dashboard redirect */}
             <Route
