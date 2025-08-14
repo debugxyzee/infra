@@ -2,66 +2,10 @@ import React, { useState } from "react";
 import { 
   MdAdd, 
   MdKeyboardArrowDown, 
-  MdKeyboardArrowRight,
-  MdDashboard,
-  MdPeople,
-  MdSettings,
-  MdFolder,
-  MdBarChart,
-  MdHelp
+  MdKeyboardArrowRight
 } from "react-icons/md";
 import { FiX } from "react-icons/fi";
-
-// Sample navigation data
-const navItems = [
-  {
-    id: "dashboard",
-    label: "Dashboard",
-    icon: MdDashboard,
-    isActive: true,
-    hasDropdown: false,
-  },
-  {
-    id: "assets",
-    label: "Assets",
-    icon: MdFolder,
-    hasDropdown: true,
-    badge: 5,
-    children: [
-      { id: "all-assets", label: "All Assets", icon: MdFolder, isActive: false },
-      { id: "categories", label: "Categories", icon: MdFolder, isActive: false },
-      { id: "tags", label: "Tags", icon: MdFolder, isActive: false },
-    ]
-  },
-  {
-    id: "users",
-    label: "Users",
-    icon: MdPeople,
-    hasDropdown: true,
-    children: [
-      { id: "all-users", label: "All Users", icon: MdPeople, isActive: false },
-      { id: "roles", label: "Roles", icon: MdPeople, isActive: false },
-    ]
-  },
-  {
-    id: "analytics",
-    label: "Analytics",
-    icon: MdBarChart,
-    hasDropdown: false,
-  },
-  {
-    id: "settings",
-    label: "Settings",
-    icon: MdSettings,
-    hasDropdown: false,
-  },
-  {
-    id: "help",
-    label: "Help & Support",
-    icon: MdHelp,
-    hasDropdown: false,
-  },
-];
+import { navItems } from "../../Data/sidebarData";
 
 function Sidebar({ isOpen, onClose, className = "" }) {
   const [expandedItems, setExpandedItems] = useState(["assets"]);
